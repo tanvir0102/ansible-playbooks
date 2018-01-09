@@ -1,0 +1,32 @@
+--- # AWS S3 Module Example
+- hosts: localhost
+  connection: local
+  remote_user: ansadm
+  become: yes
+  gather_facts: no
+  vars_files:
+  - ../files/awscreds.yml
+  tasks:
+  - name: Create a S3 Bucket
+    aws_s3:
+      aws_access_key: "{{ aws_id }}"
+      aws_secret_key: "{{ aws_key }}"
+      region: "{{ aws_region }}"
+      bucket: ansible0901201801
+      mode: create
+      permission: public-read-write
+    register: create_bucket
+  - name: Copy the Files to the Bucket
+    aws_s3:
+      aws_access_key: "{{ aws_id }}"
+      aws_secret_key: "{{ aws_key }}"
+      region: "{{ aws_region }}"
+      bucket: ansible0901201801
+      object: /ansible-playbooks/awsec2facts.yml
+      src: /home/ansadm/ansible-playbooks/awsec2facts.yml
+      mode: put
+    register: copy_files
+  - name: Output of creation
+    debug: var=create_bucket
+  - name: Output of Copy
+    debug: var=copy_files
